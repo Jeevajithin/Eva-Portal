@@ -81,7 +81,11 @@
                         <tr>
                           <td><div class="progressbg-text">Email Id</div></td>
                           <td class="w-1 fw-bold text-end">Irfana@gmail.com</td>
-                        </tr>    
+                        </tr>   
+                        <tr>
+                          <td><div class="progressbg-text">Demo</div></td>
+                          <td class="w-1 fw-bold text-end">Dummy Text</td>
+                        </tr>     
                       </tbody>
                     </table>
                   </div>
