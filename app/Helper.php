@@ -74,6 +74,27 @@ class Helper
 
             return $userSource;
         }
+
+        public static function get_teamlead_details($id)
+        {
+            $teamleadDetails = Employee_detail::where('userid', $id)->first();
+
+            return $teamleadDetails;
+        }
+
+        public static function get_manager_details($id)
+        {
+            $managerDetails = Employee_detail::where('userid', $id)->first();
+
+            return $managerDetails;
+        }
+
+        public static function get_reporting_person_details($id)
+        {
+            $reportingPersonDetails = Employee_detail::where('userid', $id)->first();
+
+            return $reportingPersonDetails;
+        }
     
 }
 

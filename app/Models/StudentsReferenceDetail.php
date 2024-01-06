@@ -14,6 +14,8 @@ class StudentsReferenceDetail extends Model
     protected $fillable=[
         'studentid',
         'employee_id',
+        'total_fee',
+        'fee_paid',
         'type'
     ];
 }

@@ -1,5 +1,8 @@
 @extends('master.masterpage')
 @section('content')
+@php
+  $user = $users->first();
+@endphp
 <div class="page-header d-print-none">
           <div class="container-xl">
             <div class="row g-2 align-items-center">
@@ -49,6 +52,15 @@
                         </div>
                     </a>
                 </div>
+                <div class="row g-2 align-items-center">
+              <div class="col">
+                <!-- Page pre-title -->
+               
+                <h3>Students Referred by {{$user->emp_name}}</h3>
+              </div>
+              <!-- Page title actions -->
+              
+            </div>
                 <div class="col-lg-8">
                 <div class="card">
                   <div class="table-responsive">
@@ -85,50 +97,59 @@
                   </div>
                 </div>
               </div>
+              <?php 
+                $designationDetails = (new \App\Helper)->get_designation_details($user->userid);
 
+                $teamleadDetails = (new \App\Helper)->get_teamlead_details($user->team_lead);
+                
+                $managerDetails = (new \App\Helper)->get_manager_details($user->marketing_manager);
+
+                $reportingPersonDetails = (new \App\Helper)->get_reporting_person_details($user->reporting_person);
+                
+              ?>
                 <div class="col-lg-4">
                 <div class="card">
                   <div class="card-body">
-                    <h3 class="card-title">About Irfana</h3>
+                    <h3 class="card-title">About {{$user->emp_name}}</h3>
                     <table class="table table-sm table-borderless">
                       <thead>
                         <tr>
-                          <th>Page</th>
-                          <th class="text-end">Visitors</th>
+                          <th>Title</th>
+                          <th class="text-end">Details</th>
                         </tr>
                       </thead>
                       <tbody>
                       <tr>
                           <td><div class="progressbg-text">Employee ID</div></td>
-                          <td class="w-1 fw-bold text-end">5454</td>
+                          <td class="w-1 fw-bold text-end">{{$user->emp_id}}</td>
                         </tr>
                         <tr>
                           <td><div class="progressbg-text">Name</div></td>
-                          <td class="w-1 fw-bold text-end">Irfana</td>
+                          <td class="w-1 fw-bold text-end">{{$user->emp_name}}</td>
                         </tr>
                         <tr>
                           <td><div class="progressbg-text">Email ID</div></td>
-                          <td class="w-1 fw-bold text-end">irfana@gmail.com</td>
+                          <td class="w-1 fw-bold text-end">{{$user->email}}</td>
                         </tr>
                         <tr>
                           <td><div class="progressbg-text">Contact Number</div></td>
-                          <td class="w-1 fw-bold text-end">957896958</td>
+                          <td class="w-1 fw-bold text-end">{{$user->contact_no}}</td>
                         </tr>
                         <tr>
                           <td><div class="progressbg-text">Designation</div></td>
-                          <td class="w-1 fw-bold text-end">Sales Associates</td>
+                          <td class="w-1 fw-bold text-end">{{$designationDetails->role_title}}</td>
                         </tr>
                         <tr>
                           <td><div class="progressbg-text">Reporting Person</div></td>
-                          <td class="w-1 fw-bold text-end">Monisha</td>
+                          <td class="w-1 fw-bold text-end">{{$teamleadDetails->emp_name}}</td>
                         </tr> 
                         <tr>
                           <td><div class="progressbg-text">Team Manager</div></td>
-                          <td class="w-1 fw-bold text-end">Aarthi</td>
+                          <td class="w-1 fw-bold text-end">{{$managerDetails->marketing_manager}}</td>
                         </tr> 
                         <tr>
                           <td><div class="progressbg-text">Team Lead</div></td>
-                          <td class="w-1 fw-bold text-end">Nida</td>
+                          <td class="w-1 fw-bold text-end">{{$reportingPersonDetails->reporting_person}}</td>
                         </tr>   
                       </tbody>
                     </table>

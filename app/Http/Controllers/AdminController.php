@@ -633,9 +633,17 @@ protected function updateAssignedModules($userId, $moduleIds, $model, $field)
             ->get();
     }
 
-    public function view_more_users()
+    public function view_more_users($id)
     {
-        return view('view_more_users');
+        $students = DB::table('student_details')
+                    ->join('students_reference_details', 'student_details.id', '=', 'students_reference_details.studentid')
+                    ->select('student_details.*', 'students_reference_details.*')
+                    ->where('students_reference_details.employee_id', '=', $id)
+                    ->get();
+
+        $users= Employee_detail::where('userid', $id)->get();
+
+        return view('view_more_users', ['students' => $students,'users' => $users]);
     }
 
     //Student registration
@@ -695,19 +703,19 @@ protected function updateAssignedModules($userId, $moduleIds, $model, $field)
 
 public function new_student_action(Request $request)
 {
-    $request->validate([
-        'joining_date' => 'required|date',
-        'student_name' => 'required|string',
-        'course_id' => 'required|exists:courses,id',
-        'fee_paid' => 'required|numeric',
-        'total_fee' => 'required|numeric',
-        'contact_no' => 'required|string',
-        'email' => 'required|email',
-        'comments' => 'nullable|string',
-        'reference_owner' => 'nullable|exists:references,id',
-        'sources_id' => 'required|exists:sources,id',
-        'technology' => 'array',	
-    ]);
+    // $request->validate([
+    //     'joining_date' => 'required|date',
+    //     'student_name' => 'required|string',
+    //     'course_id' => 'required|exists:courses,id',
+    //     'fee_paid' => 'required|numeric',
+    //     'total_fee' => 'required|numeric',
+    //     'contact_no' => 'required|string',
+    //     'email' => 'required|email',
+    //     'comments' => 'nullable|string',
+    //     'reference_owner' => 'nullable|exists:references,id',
+    //     'sources_id' => 'required|exists:sources,id',
+    //     'technology' => 'array',	
+    // ]);
 
     $selectedCertificates = $request->input('certificate_details', []);
     $certificates = implode(',', $selectedCertificates);
@@ -738,28 +746,55 @@ public function new_student_action(Request $request)
             ]); 
     }
 
-    StudentsReferenceDetail::insert([
-        'studentid'=>$studentId,
-        'employee_id'=>$request->reference_owner,
-        'type'=>"Owner",
-        'created_at' => date('Y-m-d H:i:s'),
-        'updated_at' => date('Y-m-d H:i:s')
-        ]); 
+    if ($request->has('references_shared') && !empty($request->input('references_shared'))) {
 
-        if ($request->has('references_shared') && !empty($request->input('references_shared'))) {
+        $selectedReferences = $request->input('references_shared');
+        $referencesCount = count($selectedReferences)+1;
 
-            $selectedReferences = $request->input('references_shared');
-   
-            foreach ($selectedReferences as $refId) {
-                StudentsReferenceDetail::insert([
-                    'studentid'=>$studentId,
-                    'employee_id'=>$refId,
-                    'type'=>"Distributer",
-                    'created_at' => date('Y-m-d H:i:s'),
-                    'updated_at' => date('Y-m-d H:i:s')
-                ]);
-            }
+        $total_fee=$request->total_fee;
+        $fee_paid=$request->fee_paid;
+
+        $referenceTotalfee=$total_fee/$referencesCount;
+        $referenceFeepaid=$fee_paid/$referencesCount;
+
+        foreach ($selectedReferences as $refId) {
+            StudentsReferenceDetail::insert([
+                'studentid'=>$studentId,
+                'employee_id'=>$refId,
+                'type'=>"Distributer",
+                'total_fee'=>$referenceTotalfee,
+                'fee_paid'=>$referenceFeepaid,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
         }
+
+        StudentsReferenceDetail::insert([
+            'studentid'=>$studentId,
+            'employee_id'=>$request->reference_owner,
+            'type'=>"Owner",
+            'total_fee'=>$referenceTotalfee,
+            'fee_paid'=>$referenceFeepaid,
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
+            ]); 
+    }
+    else
+    {
+        StudentsReferenceDetail::insert([
+            'studentid'=>$studentId,
+            'employee_id'=>$request->reference_owner,
+            'type'=>"Owner",
+            'total_fee'=>$request->total_fee,
+            'fee_paid'=>$request->fee_paid,
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
+            ]); 
+    }
+
+    
+
+        
 
     return redirect('/new_student')->with('success', 'Successfully Student Details Created.');
 

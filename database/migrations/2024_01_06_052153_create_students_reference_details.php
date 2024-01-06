@@ -18,6 +18,8 @@ return new class extends Migration
             $table->integer('studentid');
             $table->integer('employee_id');
             $table->string('type');
+            $table->decimal('total_fee', 10, 2);
+            $table->decimal('fee_paid', 10, 2);
             $table->timestamps();
         });
     }
